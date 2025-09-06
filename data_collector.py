@@ -8,7 +8,6 @@ from tkinter import messagebox
 import threading
 
 class DataCollector:
-    
     def __init__(self, emotion_label):
         self.emotion_label = emotion_label
         self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -20,7 +19,6 @@ class DataCollector:
         self.base_dir = "training_data"
         self.emotion_dir = os.path.join(self.base_dir, emotion_label.lower())
         os.makedirs(self.emotion_dir, exist_ok=True)
-    
     
     def start_collection(self):
         """Start data collection in a separate window"""
@@ -115,7 +113,6 @@ class DataCollector:
         self.progress_text = progress_text
         self.update_progress_display()
     
-    
     def start_camera_collection(self):
         """Start camera for manual collection"""
         self.collecting = True
@@ -126,7 +123,6 @@ class DataCollector:
     def stop_camera_collection(self):
         """Stop camera collection"""
         self.collecting = False
-    
     
     def camera_collection_loop(self):
         """Main camera collection loop"""
@@ -321,8 +317,6 @@ class DataCollector:
             
             self.progress_text.delete(1.0, tk.END)
             self.progress_text.insert(1.0, progress_info)
-    
-
 
 def main():
     """Test data collector independently"""
@@ -369,7 +363,6 @@ def main():
     
     cap.release()
     cv2.destroyAllWindows()
-    
 
 if __name__ == "__main__":
     main()
