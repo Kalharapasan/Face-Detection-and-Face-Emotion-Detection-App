@@ -7,3 +7,8 @@ from datetime import datetime, timedelta
 import pandas as pd
 from collections import Counter
 import seaborn as sns
+
+def main():
+
+if __name__ == "__main__":
+    main()
