@@ -9,6 +9,14 @@ from collections import Counter
 import seaborn as sns
 
 class ReportGenerator:
+    def __init__(self):
+        self.results_dir = "results"
+        self.reports_dir = "reports"
+        os.makedirs(self.reports_dir, exist_ok=True)
+        
+        # Set style for plots
+        plt.style.use('default')
+        sns.set_palette("husl")
     
 
 def main():
