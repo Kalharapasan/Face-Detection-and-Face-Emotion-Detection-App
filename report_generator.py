@@ -345,7 +345,117 @@ END OF REPORT
         
         print("Summary report saved as text file")
     
-    
+    def generate_training_data_report(self):
+        """Generate report on training data collection"""
+        training_dir = "training_data"
+        if not os.path.exists(training_dir):
+            print("No training data found")
+            return
+        
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        # Analyze training data
+        emotions = ['happy', 'sad', 'angry', 'surprised', 'fear', 'disgust', 'neutral']
+        training_stats = {}
+        
+        for emotion in emotions:
+            emotion_dir = os.path.join(training_dir, emotion)
+            if os.path.exists(emotion_dir):
+                images = [f for f in os.listdir(emotion_dir) if f.endswith(('.jpg', '.png'))]
+                training_stats[emotion] = len(images)
+            else:
+                training_stats[emotion] = 0
+        
+        # Create visualization
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+        
+        # Bar chart of training data
+        emotions_cap = [e.capitalize() for e in emotions]
+        counts = [training_stats[e] for e in emotions]
+        colors = plt.cm.Set3(np.linspace(0, 1, len(emotions)))
+        
+        bars = ax1.bar(emotions_cap, counts, color=colors)
+        ax1.set_title('Training Data Distribution', fontsize=14, fontweight='bold')
+        ax1.set_xlabel('Emotions')
+        ax1.set_ylabel('Number of Images')
+        ax1.tick_params(axis='x', rotation=45)
+        
+        # Add value labels
+        for bar, count in zip(bars, counts):
+            ax1.text(bar.get_x() + bar.get_width()/2., bar.get_height(),
+                    f'{count}', ha='center', va='bottom')
+        
+        # Training completeness pie chart
+        target = 100
+        complete_emotions = sum(1 for count in counts if count >= target)
+        incomplete_emotions = len(emotions) - complete_emotions
+        
+        ax2.pie([complete_emotions, incomplete_emotions], 
+               labels=['Complete (≥100 images)', 'Incomplete (<100 images)'],
+               autopct='%1.1f%%', startangle=90,
+               colors=['lightgreen', 'lightcoral'])
+        ax2.set_title('Training Data Completeness')
+        
+        plt.tight_layout()
+        plt.savefig(f"{self.reports_dir}/training_data_report_{timestamp}.png", 
+                   dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        # Generate text report
+        total_images = sum(counts)
+        report_text = f"""
+TRAINING DATA COLLECTION REPORT
+Generated on: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+============================================
+
+OVERVIEW:
+---------
+• Total Training Images: {total_images}
+• Target per Emotion: 100 images
+• Emotions with Sufficient Data: {complete_emotions}/{len(emotions)}
+• Collection Completeness: {(complete_emotions/len(emotions))*100:.1f}%
+
+DETAILED BREAKDOWN:
+------------------
+"""
+        
+        for emotion, count in zip(emotions, counts):
+            status = "✓ Complete" if count >= target else "⚠ Incomplete"
+            percentage = (count / target) * 100 if target > 0 else 0
+            report_text += f"• {emotion.capitalize()}: {count} images ({percentage:.1f}% of target) - {status}\n"
+        
+        report_text += """
+
+RECOMMENDATIONS:
+---------------
+"""
+        
+        for emotion, count in zip(emotions, counts):
+            if count < target:
+                needed = target - count
+                report_text += f"• Collect {needed} more images for {emotion.capitalize()}\n"
+        
+        if complete_emotions == len(emotions):
+            report_text += "• All emotions have sufficient training data! Ready for model training.\n"
+        
+        report_text += """
+
+QUALITY GUIDELINES:
+------------------
+• Ensure images have clear facial expressions
+• Include variety in lighting conditions
+• Capture different angles and distances
+• Remove blurry or poorly lit images
+• Maintain consistent image quality across emotions
+
+END OF TRAINING REPORT
+============================================
+"""
+        
+        with open(f"{self.reports_dir}/training_data_report_{timestamp}.txt", 'w') as f:
+            f.write(report_text)
+        
+        print("Training data report generated")
     
         
         
