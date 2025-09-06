@@ -21,6 +21,100 @@ class DataCollector:
         self.emotion_dir = os.path.join(self.base_dir, emotion_label.lower())
         os.makedirs(self.emotion_dir, exist_ok=True)
     
+    
+    def start_collection(self):
+        """Start data collection in a separate window"""
+        self.collection_window = tk.Toplevel()
+        self.collection_window.title(f"Data Collection - {self.emotion_label}")
+        self.collection_window.geometry("800x600")
+        self.collection_window.configure(bg='#2c3e50')
+        
+        # Instructions
+        instructions = f"""
+        🎭 Collecting Data for: {self.emotion_label.upper()}
+        
+        Instructions:
+        1. Position your face in the camera view
+        2. Show clear {self.emotion_label.lower()} expression
+        3. Press SPACEBAR to capture images
+        4. Press 'q' to quit
+        5. Try different angles and lighting
+        
+        Target: 100+ images for good training
+        """
+        
+        instruction_label = tk.Label(
+            self.collection_window,
+            text=instructions,
+            font=('Arial', 12),
+            bg='#2c3e50',
+            fg='#ecf0f1',
+            justify='left'
+        )
+        instruction_label.pack(pady=10)
+        
+        # Status display
+        self.status_var = tk.StringVar(value=f"Images collected: 0")
+        status_label = tk.Label(
+            self.collection_window,
+            textvariable=self.status_var,
+            font=('Arial', 14, 'bold'),
+            bg='#2c3e50',
+            fg='#27ae60'
+        )
+        status_label.pack(pady=5)
+        
+        # Control buttons
+        button_frame = tk.Frame(self.collection_window, bg='#2c3e50')
+        button_frame.pack(pady=10)
+        
+        start_btn = tk.Button(
+            button_frame,
+            text="🎥 Start Collection",
+            command=self.start_camera_collection,
+            bg='#27ae60',
+            fg='white',
+            font=('Arial', 12, 'bold'),
+            padx=20
+        )
+        start_btn.pack(side='left', padx=10)
+        
+        stop_btn = tk.Button(
+            button_frame,
+            text="⏹️ Stop Collection",
+            command=self.stop_camera_collection,
+            bg='#e74c3c',
+            fg='white',
+            font=('Arial', 12, 'bold'),
+            padx=20
+        )
+        stop_btn.pack(side='left', padx=10)
+        
+        # Auto-collect button
+        auto_btn = tk.Button(
+            button_frame,
+            text="🤖 Auto Collect (10 images)",
+            command=self.auto_collect,
+            bg='#3498db',
+            fg='white',
+            font=('Arial', 12, 'bold'),
+            padx=20
+        )
+        auto_btn.pack(side='left', padx=10)
+        
+        # Progress info
+        progress_text = tk.Text(
+            self.collection_window,
+            height=10,
+            bg='#34495e',
+            fg='#ecf0f1',
+            font=('Consolas', 10)
+        )
+        progress_text.pack(fill='both', expand=True, padx=10, pady=10)
+        
+        self.progress_text = progress_text
+        self.update_progress_display()
+    
     def auto_collect(self):
         """Automatically collect multiple images"""
         self.collecting = True
