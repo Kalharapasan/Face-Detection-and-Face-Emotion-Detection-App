@@ -9,6 +9,39 @@ import threading
 
 class DataCollector:
     
+    
+    def update_progress_display(self):
+        """Update progress display"""
+        if hasattr(self, 'progress_text'):
+            # Get current stats
+            total_images = len([f for f in os.listdir(self.emotion_dir) if f.endswith('.jpg')])
+            
+            progress_info = f"📊 Collection Progress for {self.emotion_label}\n"
+            progress_info += "=" * 50 + "\n"
+            progress_info += f"Total images collected: {total_images}\n"
+            progress_info += f"Images this session: {self.image_count}\n"
+            progress_info += f"Target: 100+ images\n"
+            progress_info += f"Progress: {min(100, (total_images/100)*100):.1f}%\n\n"
+            
+            # Tips
+            progress_info += "💡 Collection Tips:\n"
+            progress_info += "• Vary your facial expressions\n"
+            progress_info += "• Change lighting conditions\n"
+            progress_info += "• Try different angles\n"
+            progress_info += "• Ensure clear, focused images\n"
+            progress_info += "• Keep expressions natural\n\n"
+            
+            # Recent files
+            recent_files = sorted([f for f in os.listdir(self.emotion_dir) if f.endswith('.jpg')])[-10:]
+            if recent_files:
+                progress_info += "📁 Recent captures:\n"
+                for file in recent_files:
+                    progress_info += f"  • {file}\n"
+            
+            self.progress_text.delete(1.0, tk.END)
+            self.progress_text.insert(1.0, progress_info)
+    
+
 
 def main():
     """Test data collector independently"""
