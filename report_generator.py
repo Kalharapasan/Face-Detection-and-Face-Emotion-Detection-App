@@ -42,6 +42,28 @@ class ReportGenerator:
                     print(f"Error loading {filename}: {e}")
         
         return all_results
+    
+    def generate_comprehensive_report(self):
+        """Generate a comprehensive analytics report"""
+        results = self.load_all_results()
+        
+        if not results:
+            print("No results found to generate report")
+            return
+        
+        # Create timestamp for report
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        # Generate different types of analysis
+        self.generate_emotion_distribution(results, timestamp)
+        self.generate_timeline_analysis(results, timestamp)
+        self.generate_confidence_analysis(results, timestamp)
+        self.generate_session_comparison(results, timestamp)
+        self.generate_summary_report(results, timestamp)
+        
+        print(f"Comprehensive report generated in {self.reports_dir}/")
+    
+    
 
 def main():
     """Generate reports independently"""
