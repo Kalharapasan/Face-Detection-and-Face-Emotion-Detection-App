@@ -9,6 +9,16 @@ from collections import Counter
 import seaborn as sns
 
 def main():
+    """Generate reports independently"""
+    generator = ReportGenerator()
+    
+    print("Generating comprehensive emotion detection report...")
+    generator.generate_comprehensive_report()
+    
+    print("Generating training data report...")
+    generator.generate_training_data_report()
+    
+    print("All reports generated successfully!")
 
 if __name__ == "__main__":
     main()
