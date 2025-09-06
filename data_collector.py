@@ -123,6 +123,10 @@ class DataCollector:
         collection_thread.daemon = True
         collection_thread.start()
     
+    def stop_camera_collection(self):
+        """Stop camera collection"""
+        self.collecting = False
+    
     def auto_collect(self):
         """Automatically collect multiple images"""
         self.collecting = True
