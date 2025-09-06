@@ -262,6 +262,89 @@ class ReportGenerator:
                    dpi=300, bbox_inches='tight')
         plt.close()
     
+    def generate_summary_report(self, results, timestamp):
+        """Generate text summary report"""
+        total_detections = len(results)
+        emotion_counts = Counter([r['emotion'] for r in results])
+        confidences = [float(r['confidence']) for r in results if 'confidence' in r]
+        
+        # Calculate statistics
+        most_common_emotion = emotion_counts.most_common(1)[0] if emotion_counts else ('None', 0)
+        avg_confidence = np.mean(confidences) if confidences else 0
+        high_confidence_count = sum(1 for c in confidences if c >= 0.7)
+        
+        # Get unique sessions
+        sessions = set([r.get('session', 'unknown') for r in results])
+        
+        # Generate report text
+        report_text = f"""
+EMOTION DETECTION ANALYSIS REPORT
+Generated on: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+==================================================
+
+SUMMARY STATISTICS:
+------------------
+• Total Detections: {total_detections}
+• Unique Sessions: {len(sessions)}
+• Most Common Emotion: {most_common_emotion[0]} ({most_common_emotion[1]} occurrences)
+• Average Confidence: {avg_confidence:.2%}
+• High Confidence Detections (≥70%): {high_confidence_count} ({high_confidence_count/len(confidences)*100:.1f}%)
+
+EMOTION BREAKDOWN:
+-----------------
+"""
+        
+        for emotion, count in emotion_counts.most_common():
+            percentage = (count / total_detections) * 100
+            report_text += f"• {emotion}: {count} detections ({percentage:.1f}%)\n"
+        
+        report_text += f"""
+
+CONFIDENCE ANALYSIS:
+------------------
+• Minimum Confidence: {min(confidences):.2%}
+• Maximum Confidence: {max(confidences):.2%}
+• Standard Deviation: {np.std(confidences):.2%}
+
+QUALITY INDICATORS:
+------------------
+• High Quality Detections (≥80%): {sum(1 for c in confidences if c >= 0.8)}
+• Medium Quality Detections (50-80%): {sum(1 for c in confidences if 0.5 <= c < 0.8)}
+• Low Quality Detections (<50%): {sum(1 for c in confidences if c < 0.5)}
+
+RECOMMENDATIONS:
+---------------
+"""
+        
+        # Add recommendations based on analysis
+        if avg_confidence < 0.6:
+            report_text += "• Consider improving lighting conditions for better detection accuracy\n"
+        if emotion_counts.get('Unknown', 0) > total_detections * 0.1:
+            report_text += "• High number of 'Unknown' emotions detected - consider recalibrating detection parameters\n"
+        if len(emotion_counts) < 3:
+            report_text += "• Limited emotional range detected - try varying expressions during detection\n"
+        if high_confidence_count / len(confidences) > 0.8:
+            report_text += "• Excellent detection quality! System is performing well\n"
+        
+        report_text += f"""
+
+TECHNICAL DETAILS:
+-----------------
+• Report Generated: {timestamp}
+• Data Sources: {len(sessions)} session file(s)
+• Analysis Period: Various sessions
+• Chart Files Generated: 4 visualization files
+
+END OF REPORT
+==================================================
+        """
+        
+        # Save text report
+        with open(f"{self.reports_dir}/summary_report_{timestamp}.txt", 'w') as f:
+            f.write(report_text)
+        
+        print("Summary report saved as text file")
+    
     
     
         
