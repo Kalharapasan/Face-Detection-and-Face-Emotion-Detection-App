@@ -226,6 +226,71 @@ class DataCollector:
         auto_thread.daemon = True
         auto_thread.start()
     
+    def auto_collection_loop(self):
+        """Auto collection loop"""
+        cap = cv2.VideoCapture(0)
+        
+        if not cap.isOpened():
+            messagebox.showerror("Error", "Could not open camera")
+            return
+        
+        target_images = 10
+        collected = 0
+        frame_skip = 15  # Collect every 15 frames
+        frame_count = 0
+        
+        print(f"Auto-collecting {target_images} images for {self.emotion_label}")
+        
+        while self.collecting and collected < target_images:
+            ret, frame = cap.read()
+            if not ret:
+                break
+            
+            frame = cv2.flip(frame, 1)
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            
+            # Detect faces
+            faces = self.face_cascade.detectMultiScale(
+                gray, 
+                scaleFactor=1.1, 
+                minNeighbors=5, 
+                minSize=(100, 100)
+            )
+            
+            # Draw progress
+            for (x, y, w, h) in faces:
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            
+            # Add collection info
+            cv2.putText(frame, f"Auto-collecting: {collected}/{target_images}", 
+                       (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
+            cv2.putText(frame, f"Show {self.emotion_label} expression", 
+                       (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
+            
+            # Countdown
+            if len(faces) > 0:
+                countdown = frame_skip - (frame_count % frame_skip)
+                cv2.putText(frame, f"Next capture in: {countdown}", 
+                           (10, 110), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 0), 2)
+            
+            cv2.imshow(f'Auto Collection - {self.emotion_label}', frame)
+            
+            # Capture at intervals
+            if len(faces) > 0 and frame_count % frame_skip == 0:
+                self.capture_face_data(frame, faces)
+                collected += 1
+            
+            frame_count += 1
+            
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+        
+        cap.release()
+        cv2.destroyAllWindows()
+        self.collecting = False
+        
+        messagebox.showinfo("Complete", f"Auto-collection finished! Collected {collected} images.")
+    
     def update_progress_display(self):
         """Update progress display"""
         if hasattr(self, 'progress_text'):
