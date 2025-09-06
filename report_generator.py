@@ -144,7 +144,72 @@ class ReportGenerator:
         plt.savefig(f"{self.reports_dir}/timeline_analysis_{timestamp}.png", 
                    dpi=300, bbox_inches='tight')
         plt.close()    
+    
+    def generate_confidence_analysis(self, results, timestamp):
+        """Generate confidence analysis charts"""
+        confidences = [float(r['confidence']) for r in results if 'confidence' in r]
+        emotions = [r['emotion'] for r in results if 'confidence' in r]
         
+        if not confidences:
+            return
+        
+        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 12))
+        
+        # Overall confidence distribution
+        ax1.hist(confidences, bins=20, alpha=0.7, color='skyblue', edgecolor='black')
+        ax1.set_xlabel('Confidence Score')
+        ax1.set_ylabel('Frequency')
+        ax1.set_title('Overall Confidence Distribution')
+        ax1.axvline(np.mean(confidences), color='red', linestyle='--', 
+                   label=f'Mean: {np.mean(confidences):.2f}')
+        ax1.legend()
+        
+        # Confidence by emotion (box plot)
+        emotion_confidence = {}
+        for emotion, confidence in zip(emotions, confidences):
+            if emotion not in emotion_confidence:
+                emotion_confidence[emotion] = []
+            emotion_confidence[emotion].append(confidence)
+        
+        emotions_list = list(emotion_confidence.keys())
+        confidence_lists = [emotion_confidence[emotion] for emotion in emotions_list]
+        
+        ax2.boxplot(confidence_lists, labels=emotions_list)
+        ax2.set_xlabel('Emotions')
+        ax2.set_ylabel('Confidence Score')
+        ax2.set_title('Confidence Distribution by Emotion')
+        ax2.tick_params(axis='x', rotation=45)
+        
+        # Average confidence by emotion
+        avg_confidences = [np.mean(emotion_confidence[emotion]) for emotion in emotions_list]
+        bars = ax3.bar(emotions_list, avg_confidences, color='lightgreen', alpha=0.7)
+        ax3.set_xlabel('Emotions')
+        ax3.set_ylabel('Average Confidence')
+        ax3.set_title('Average Confidence by Emotion')
+        ax3.tick_params(axis='x', rotation=45)
+        
+        # Add value labels
+        for bar, conf in zip(bars, avg_confidences):
+            ax3.text(bar.get_x() + bar.get_width()/2., bar.get_height(),
+                    f'{conf:.2f}', ha='center', va='bottom')
+        
+        # Confidence threshold analysis
+        thresholds = np.arange(0.1, 1.0, 0.1)
+        detection_counts = []
+        for threshold in thresholds:
+            count = sum(1 for conf in confidences if conf >= threshold)
+            detection_counts.append(count)
+        
+        ax4.plot(thresholds, detection_counts, marker='o', linewidth=2, markersize=6)
+        ax4.set_xlabel('Confidence Threshold')
+        ax4.set_ylabel('Number of Detections')
+        ax4.set_title('Detections vs Confidence Threshold')
+        ax4.grid(True, alpha=0.3)
+        
+        plt.tight_layout()
+        plt.savefig(f"{self.reports_dir}/confidence_analysis_{timestamp}.png", 
+                   dpi=300, bbox_inches='tight')
+        plt.close()    
         
         
 
