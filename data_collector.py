@@ -127,6 +127,61 @@ class DataCollector:
         """Stop camera collection"""
         self.collecting = False
     
+    
+    def camera_collection_loop(self):
+        """Main camera collection loop"""
+        cap = cv2.VideoCapture(0)
+        
+        if not cap.isOpened():
+            messagebox.showerror("Error", "Could not open camera")
+            return
+        
+        print(f"Starting data collection for {self.emotion_label}")
+        print("Press SPACEBAR to capture, 'q' to quit")
+        
+        while self.collecting:
+            ret, frame = cap.read()
+            if not ret:
+                break
+            
+            frame = cv2.flip(frame, 1)
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            
+            # Detect faces
+            faces = self.face_cascade.detectMultiScale(
+                gray, 
+                scaleFactor=1.1, 
+                minNeighbors=5, 
+                minSize=(100, 100)
+            )
+            
+            # Draw rectangles around faces
+            for (x, y, w, h) in faces:
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                
+                # Add instruction text
+                cv2.putText(frame, f"Show {self.emotion_label} expression", 
+                           (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+            
+            # Add collection info
+            cv2.putText(frame, f"Emotion: {self.emotion_label}", 
+                       (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+            cv2.putText(frame, f"Images: {self.image_count}", 
+                       (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+            cv2.putText(frame, "SPACEBAR: Capture | Q: Quit", 
+                       (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+            
+            cv2.imshow(f'Data Collection - {self.emotion_label}', frame)
+            
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord(' '):  # Spacebar to capture
+                self.capture_face_data(frame, faces)
+            elif key == ord('q'):
+                break
+        
+        cap.release()
+        cv2.destroyAllWindows()
+    
     def auto_collect(self):
         """Automatically collect multiple images"""
         self.collecting = True
