@@ -143,7 +143,7 @@ class ReportGenerator:
         plt.tight_layout()
         plt.savefig(f"{self.reports_dir}/timeline_analysis_{timestamp}.png", 
                    dpi=300, bbox_inches='tight')
-        plt.close()    
+        plt.close()
     
     def generate_confidence_analysis(self, results, timestamp):
         """Generate confidence analysis charts"""
@@ -209,7 +209,7 @@ class ReportGenerator:
         plt.tight_layout()
         plt.savefig(f"{self.reports_dir}/confidence_analysis_{timestamp}.png", 
                    dpi=300, bbox_inches='tight')
-        plt.close()    
+        plt.close()
     
     def generate_session_comparison(self, results, timestamp):
         """Generate session comparison analysis"""
@@ -456,9 +456,6 @@ END OF TRAINING REPORT
             f.write(report_text)
         
         print("Training data report generated")
-    
-        
-        
 
 def main():
     """Generate reports independently"""
