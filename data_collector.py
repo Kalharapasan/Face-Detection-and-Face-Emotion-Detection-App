@@ -115,6 +115,14 @@ class DataCollector:
         self.progress_text = progress_text
         self.update_progress_display()
     
+    
+    def start_camera_collection(self):
+        """Start camera for manual collection"""
+        self.collecting = True
+        collection_thread = threading.Thread(target=self.camera_collection_loop)
+        collection_thread.daemon = True
+        collection_thread.start()
+    
     def auto_collect(self):
         """Automatically collect multiple images"""
         self.collecting = True
