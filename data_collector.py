@@ -9,6 +9,12 @@ import threading
 
 class DataCollector:
     
+    def auto_collect(self):
+        """Automatically collect multiple images"""
+        self.collecting = True
+        auto_thread = threading.Thread(target=self.auto_collection_loop)
+        auto_thread.daemon = True
+        auto_thread.start()
     
     def update_progress_display(self):
         """Update progress display"""
