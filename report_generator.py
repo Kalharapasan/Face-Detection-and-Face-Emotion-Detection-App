@@ -63,7 +63,41 @@ class ReportGenerator:
         
         print(f"Comprehensive report generated in {self.reports_dir}/")
     
-    
+    def generate_emotion_distribution(self, results, timestamp):
+        """Generate emotion distribution charts"""
+        emotions = [r['emotion'] for r in results]
+        emotion_counts = Counter(emotions)
+        
+        # Create figure with subplots
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+        
+        # Pie chart
+        colors = plt.cm.Set3(np.linspace(0, 1, len(emotion_counts)))
+        ax1.pie(emotion_counts.values(), labels=emotion_counts.keys(), autopct='%1.1f%%', 
+                colors=colors, startangle=90)
+        ax1.set_title('Emotion Distribution', fontsize=14, fontweight='bold')
+        
+        # Bar chart
+        bars = ax2.bar(emotion_counts.keys(), emotion_counts.values(), color=colors)
+        ax2.set_title('Emotion Frequency', fontsize=14, fontweight='bold')
+        ax2.set_xlabel('Emotions')
+        ax2.set_ylabel('Count')
+        ax2.tick_params(axis='x', rotation=45)
+        
+        # Add value labels on bars
+        for bar in bars:
+            height = bar.get_height()
+            ax2.text(bar.get_x() + bar.get_width()/2., height,
+                    f'{int(height)}', ha='center', va='bottom')
+        
+        plt.tight_layout()
+        plt.savefig(f"{self.reports_dir}/emotion_distribution_{timestamp}.png", 
+                   dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        
+        
+        
 
 def main():
     """Generate reports independently"""
