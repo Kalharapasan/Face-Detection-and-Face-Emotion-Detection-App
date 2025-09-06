@@ -94,7 +94,56 @@ class ReportGenerator:
         plt.savefig(f"{self.reports_dir}/emotion_distribution_{timestamp}.png", 
                    dpi=300, bbox_inches='tight')
         plt.close()
+    
+    def generate_timeline_analysis(self, results, timestamp):
+        """Generate timeline analysis"""
+        # Convert timestamps and group by time periods
+        timeline_data = {}
+        for result in results:
+            time_str = result.get('timestamp', '00:00:00')
+            try:
+                # Extract hour from timestamp
+                hour = int(time_str.split(':')[0])
+                if hour not in timeline_data:
+                    timeline_data[hour] = []
+                timeline_data[hour].append(result['emotion'])
+            except:
+                continue
         
+        if not timeline_data:
+            return
+        
+        # Create hourly emotion distribution
+        fig, ax = plt.subplots(figsize=(12, 8))
+        
+        emotions = ['Happy', 'Sad', 'Angry', 'Surprised', 'Fear', 'Disgust', 'Neutral']
+        hours = sorted(timeline_data.keys())
+        
+        emotion_by_hour = {}
+        for emotion in emotions:
+            emotion_by_hour[emotion] = []
+            for hour in hours:
+                count = timeline_data[hour].count(emotion)
+                emotion_by_hour[emotion].append(count)
+        
+        # Create stacked bar chart
+        bottom = np.zeros(len(hours))
+        colors = plt.cm.Set3(np.linspace(0, 1, len(emotions)))
+        
+        for i, emotion in enumerate(emotions):
+            ax.bar(hours, emotion_by_hour[emotion], bottom=bottom, 
+                  label=emotion, color=colors[i])
+            bottom += emotion_by_hour[emotion]
+        
+        ax.set_xlabel('Hour of Day')
+        ax.set_ylabel('Emotion Count')
+        ax.set_title('Emotion Distribution by Time of Day', fontsize=14, fontweight='bold')
+        ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+        
+        plt.tight_layout()
+        plt.savefig(f"{self.reports_dir}/timeline_analysis_{timestamp}.png", 
+                   dpi=300, bbox_inches='tight')
+        plt.close()    
         
         
         
