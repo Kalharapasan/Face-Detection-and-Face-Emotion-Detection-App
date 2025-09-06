@@ -8,6 +8,9 @@ import pandas as pd
 from collections import Counter
 import seaborn as sns
 
+class ReportGenerator:
+    
+
 def main():
     """Generate reports independently"""
     generator = ReportGenerator()
