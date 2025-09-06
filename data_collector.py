@@ -9,6 +9,18 @@ import threading
 
 class DataCollector:
     
+    def __init__(self, emotion_label):
+        self.emotion_label = emotion_label
+        self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        self.collecting = False
+        self.image_count = 0
+        self.session_count = 0
+        
+        # Create directories
+        self.base_dir = "training_data"
+        self.emotion_dir = os.path.join(self.base_dir, emotion_label.lower())
+        os.makedirs(self.emotion_dir, exist_ok=True)
+    
     def auto_collect(self):
         """Automatically collect multiple images"""
         self.collecting = True
