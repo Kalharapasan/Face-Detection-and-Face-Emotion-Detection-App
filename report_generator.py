@@ -18,6 +18,30 @@ class ReportGenerator:
         plt.style.use('default')
         sns.set_palette("husl")
     
+    def load_all_results(self):
+        """Load all result files"""
+        all_results = []
+        
+        if not os.path.exists(self.results_dir):
+            return all_results
+        
+        for filename in os.listdir(self.results_dir):
+            if filename.endswith('.json'):
+                filepath = os.path.join(self.results_dir, filename)
+                try:
+                    with open(filepath, 'r') as f:
+                        data = json.load(f)
+                    
+                    # Add filename info
+                    for item in data:
+                        item['session'] = filename
+                        item['session_date'] = filename.split('_')[2] if len(filename.split('_')) > 2 else 'unknown'
+                    
+                    all_results.extend(data)
+                except Exception as e:
+                    print(f"Error loading {filename}: {e}")
+        
+        return all_results
 
 def main():
     """Generate reports independently"""
