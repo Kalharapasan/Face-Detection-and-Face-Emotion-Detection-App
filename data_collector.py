@@ -182,6 +182,43 @@ class DataCollector:
         cap.release()
         cv2.destroyAllWindows()
     
+    def capture_face_data(self, frame, faces):
+        """Capture face data from current frame"""
+        if len(faces) == 0:
+            print("No face detected!")
+            return
+        
+        # Use the largest face
+        largest_face = max(faces, key=lambda face: face[2] * face[3])
+        x, y, w, h = largest_face
+        
+        # Extract face region with some padding
+        padding = 20
+        y1 = max(0, y - padding)
+        y2 = min(frame.shape[0], y + h + padding)
+        x1 = max(0, x - padding)
+        x2 = min(frame.shape[1], x + w + padding)
+        
+        face_img = frame[y1:y2, x1:x2]
+        
+        # Resize to standard size
+        face_img = cv2.resize(face_img, (128, 128))
+        
+        # Save image
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+        filename = f"{self.emotion_label.lower()}_{timestamp}_{self.image_count:04d}.jpg"
+        filepath = os.path.join(self.emotion_dir, filename)
+        
+        cv2.imwrite(filepath, face_img)
+        self.image_count += 1
+        
+        print(f"Captured image {self.image_count}: {filename}")
+        
+        # Update UI
+        if hasattr(self, 'status_var'):
+            self.status_var.set(f"Images collected: {self.image_count}")
+            self.update_progress_display()
+    
     def auto_collect(self):
         """Automatically collect multiple images"""
         self.collecting = True
