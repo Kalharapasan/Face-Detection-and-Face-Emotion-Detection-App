@@ -210,6 +210,60 @@ class ReportGenerator:
         plt.savefig(f"{self.reports_dir}/confidence_analysis_{timestamp}.png", 
                    dpi=300, bbox_inches='tight')
         plt.close()    
+    
+    def generate_session_comparison(self, results, timestamp):
+        """Generate session comparison analysis"""
+        session_data = {}
+        for result in results:
+            session = result.get('session', 'unknown')
+            if session not in session_data:
+                session_data[session] = []
+            session_data[session].append(result)
+        
+        if len(session_data) < 2:
+            return
+        
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+        
+        # Session duration comparison (approximate)
+        session_lengths = []
+        session_names = []
+        for session, data in session_data.items():
+            session_lengths.append(len(data))
+            session_names.append(session[:15] + '...' if len(session) > 15 else session)
+        
+        bars = ax1.bar(range(len(session_names)), session_lengths, color='lightcoral')
+        ax1.set_xlabel('Sessions')
+        ax1.set_ylabel('Number of Detections')
+        ax1.set_title('Detections per Session')
+        ax1.set_xticks(range(len(session_names)))
+        ax1.set_xticklabels(session_names, rotation=45)
+        
+        # Add value labels
+        for bar, length in zip(bars, session_lengths):
+            ax1.text(bar.get_x() + bar.get_width()/2., bar.get_height(),
+                    f'{length}', ha='center', va='bottom')
+        
+        # Dominant emotion per session
+        session_emotions = {}
+        for session, data in session_data.items():
+            emotions = [d['emotion'] for d in data]
+            most_common = Counter(emotions).most_common(1)[0][0]
+            session_emotions[session] = most_common
+        
+        # Count dominant emotions
+        dominant_counts = Counter(session_emotions.values())
+        ax2.pie(dominant_counts.values(), labels=dominant_counts.keys(), autopct='%1.1f%%',
+                startangle=90)
+        ax2.set_title('Dominant Emotions Across Sessions')
+        
+        plt.tight_layout()
+        plt.savefig(f"{self.reports_dir}/session_comparison_{timestamp}.png", 
+                   dpi=300, bbox_inches='tight')
+        plt.close()
+    
+    
+    
         
         
 
