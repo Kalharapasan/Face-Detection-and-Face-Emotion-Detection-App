@@ -637,6 +637,21 @@ class EmotionDetectionApp:
                 
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to clear results: {str(e)}")
+    
+    def save_settings(self):
+        """Save application settings"""
+        settings = {
+            'camera_index': self.camera_var.get(),
+            'resolution': self.resolution_var.get(),
+            'confidence_threshold': self.confidence_threshold.get()
+        }
+        
+        try:
+            with open('settings.json', 'w') as f:
+                json.dump(settings, f, indent=2)
+            messagebox.showinfo("Success", "Settings saved successfully!")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to save settings: {str(e)}")
 
 def main():
     root = tk.Tk()
