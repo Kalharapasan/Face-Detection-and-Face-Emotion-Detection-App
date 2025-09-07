@@ -236,3 +236,7 @@ class EmotionDetector:
                          (offset_x + sx, offset_y + sy), 
                          (offset_x + sx + sw, offset_y + sy + sh), 
                          (0, 0, 255), 1)
+    
+    def reset_history(self):
+        """Reset emotion history"""
+        self.emotion_history.clear()
