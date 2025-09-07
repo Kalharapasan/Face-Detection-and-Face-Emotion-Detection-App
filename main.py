@@ -11,3 +11,13 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+
+
+
+def main():
+    root = tk.Tk()
+    app = EmotionDetectionApp(root)
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
