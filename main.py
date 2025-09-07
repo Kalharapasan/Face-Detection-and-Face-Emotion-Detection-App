@@ -320,6 +320,96 @@ class EmotionDetectionApp:
         )
         self.results_text.pack(fill='both', expand=True, padx=10, pady=10)
     
+    def setup_settings_tab(self):
+        """Setup settings tab"""
+        settings_frame = ttk.Frame(self.notebook)
+        self.notebook.add(settings_frame, text="⚙️ Settings")
+        
+        # Settings content
+        settings_content = tk.Frame(settings_frame, bg='#ecf0f1')
+        settings_content.pack(fill='both', expand=True, padx=20, pady=20)
+        
+        # Camera settings
+        camera_frame = tk.LabelFrame(
+            settings_content,
+            text="📷 Camera Settings",
+            font=('Arial', 12, 'bold'),
+            bg='#ecf0f1'
+        )
+        camera_frame.pack(fill='x', pady=10)
+        
+        tk.Label(camera_frame, text="Camera Index:", bg='#ecf0f1').grid(row=0, column=0, sticky='w', padx=10, pady=5)
+        self.camera_var = tk.StringVar(value="0")
+        tk.Entry(camera_frame, textvariable=self.camera_var, width=10).grid(row=0, column=1, padx=10, pady=5)
+        
+        tk.Label(camera_frame, text="Resolution:", bg='#ecf0f1').grid(row=1, column=0, sticky='w', padx=10, pady=5)
+        self.resolution_var = tk.StringVar(value="640x480")
+        resolution_combo = ttk.Combobox(
+            camera_frame, 
+            textvariable=self.resolution_var,
+            values=['640x480', '800x600', '1024x768', '1280x720'],
+            state='readonly'
+        )
+        resolution_combo.grid(row=1, column=1, padx=10, pady=5)
+        
+        # Detection settings
+        detection_frame = tk.LabelFrame(
+            settings_content,
+            text="🔍 Detection Settings",
+            font=('Arial', 12, 'bold'),
+            bg='#ecf0f1'
+        )
+        detection_frame.pack(fill='x', pady=10)
+        
+        tk.Label(detection_frame, text="Confidence Threshold:", bg='#ecf0f1').grid(row=0, column=0, sticky='w', padx=10, pady=5)
+        self.confidence_threshold = tk.DoubleVar(value=0.5)
+        tk.Scale(
+            detection_frame,
+            from_=0.0,
+            to=1.0,
+            resolution=0.1,
+            orient='horizontal',
+            variable=self.confidence_threshold,
+            bg='#ecf0f1'
+        ).grid(row=0, column=1, padx=10, pady=5)
+        
+        # Save settings button
+        tk.Button(
+            settings_content,
+            text="💾 Save Settings",
+            command=self.save_settings,
+            bg='#27ae60',
+            fg='white',
+            font=('Arial', 12, 'bold'),
+            padx=20
+        ).pack(pady=20)
+    
+    def start_detection(self):
+        """Start live emotion detection"""
+        try:
+            camera_index = int(self.camera_var.get())
+            self.cap = cv2.VideoCapture(camera_index)
+            
+            if not self.cap.isOpened():
+                messagebox.showerror("Error", "Could not open camera")
+                return
+            
+            self.detection_running = True
+            self.start_btn.config(state='disabled')
+            self.stop_btn.config(state='normal')
+            
+            # Start detection thread
+            self.detection_thread = threading.Thread(target=self.detection_loop)
+            self.detection_thread.daemon = True
+            self.detection_thread.start()
+            
+            # Start timer
+            self.session_start_time = datetime.now()
+            self.update_session_time()
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to start detection: {str(e)}")
+    
 
 def main():
     root = tk.Tk()
