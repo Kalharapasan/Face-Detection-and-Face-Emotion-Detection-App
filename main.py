@@ -572,6 +572,45 @@ class EmotionDetectionApp:
         
         self.training_text.insert(1.0, training_info)
     
+    def load_saved_results(self):
+        """Load and display saved results"""
+        self.results_text.delete(1.0, tk.END)
+        
+        results_info = "📈 Detection Results Summary\n"
+        results_info += "=" * 60 + "\n\n"
+        
+        results_dir = "results"
+        if os.path.exists(results_dir):
+            files = [f for f in os.listdir(results_dir) if f.endswith('.json')]
+            files.sort(reverse=True)  # Most recent first
+            
+            for file in files[:10]:  # Show last 10 files
+                filepath = os.path.join(results_dir, file)
+                try:
+                    with open(filepath, 'r') as f:
+                        data = json.load(f)
+                    
+                    results_info += f"📄 {file}\n"
+                    results_info += f"   Total detections: {len(data)}\n"
+                    
+                    if data:
+                        emotions = [d['emotion'] for d in data]
+                        unique_emotions = set(emotions)
+                        for emotion in unique_emotions:
+                            count = emotions.count(emotion)
+                            percentage = (count / len(emotions)) * 100
+                            results_info += f"   {emotion}: {count} ({percentage:.1f}%)\n"
+                    
+                    results_info += "\n"
+                    
+                except Exception as e:
+                    results_info += f"❌ Error reading {file}: {str(e)}\n\n"
+        else:
+            results_info += "No results found. Start detection first.\n"
+        
+        self.results_text.insert(1.0, results_info)
+    
+    
 
 def main():
     root = tk.Tk()
