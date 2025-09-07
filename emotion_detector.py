@@ -2,9 +2,7 @@
 import cv2
 import numpy as np
 
-
 class EmotionDetector:
-    
     def __init__(self):
         # Load all necessary cascades
         self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -148,7 +146,7 @@ class EmotionDetector:
         avg_confidence = np.mean([e[1] for e in self.emotion_history if e[0] == most_common])
         
         return most_common, avg_confidence
-
+    
     def process_frame(self, frame):
         """Process a single frame and return detection results"""
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -220,7 +218,7 @@ class EmotionDetector:
                 })
         
         return results
-
+    
     def _draw_features(self, frame, features, offset_x, offset_y):
         """Draw detected features on the frame"""
         # Draw eyes
