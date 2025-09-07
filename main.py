@@ -465,6 +465,20 @@ class EmotionDetectionApp:
             # Update face count
             self.root.after(0, lambda: self.faces_detected_var.set(f"Faces Detected: {face_count}"))
     
+    def update_detection_ui(self, emotion, confidence):
+        """Update detection UI elements"""
+        self.emotion_var.set(f"Current Emotion: {emotion}")
+        self.confidence_var.set(f"Confidence: {confidence:.1%}")
+        
+        # Add to recent emotions list
+        timestamp = datetime.now().strftime("%H:%M:%S")
+        recent_entry = f"{timestamp} - {emotion} ({confidence:.1%})"
+        self.recent_listbox.insert(0, recent_entry)
+        
+        # Keep only last 20 entries
+        if self.recent_listbox.size() > 20:
+            self.recent_listbox.delete(20, tk.END)
+    
     
 
 def main():
