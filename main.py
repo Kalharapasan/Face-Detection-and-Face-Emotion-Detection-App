@@ -479,7 +479,10 @@ class EmotionDetectionApp:
         if self.recent_listbox.size() > 20:
             self.recent_listbox.delete(20, tk.END)
     
-    
+    def update_video_display(self, photo):
+        """Update video display"""
+        self.video_label.config(image=photo)
+        self.video_label.image = photo  # Keep a reference
 
 def main():
     root = tk.Tk()
