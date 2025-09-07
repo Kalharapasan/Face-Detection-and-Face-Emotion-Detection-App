@@ -533,6 +533,15 @@ class EmotionDetectionApp:
         except Exception as e:
             messagebox.showerror("Error", f"Failed to start data collection: {str(e)}")
     
+    def open_training_folder(self):
+        """Open training data folder"""
+        training_dir = "training_data"
+        if not os.path.exists(training_dir):
+            os.makedirs(training_dir)
+        
+        os.startfile(training_dir)  # Windows
+        # For other OS: subprocess.call(["open", training_dir])  # macOS
+        # For other OS: subprocess.call(["xdg-open", training_dir])  # Linux
 
 def main():
     root = tk.Tk()
