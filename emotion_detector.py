@@ -5,7 +5,7 @@ import numpy as np
 
 class EmotionDetector:
     
-     def __init__(self):
+    def __init__(self):
         # Load all necessary cascades
         self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         self.eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
@@ -55,3 +55,31 @@ class EmotionDetector:
         
         return features
     
+    def analyze_face_geometry(self, face_gray):
+        """Analyze face geometry for emotion clues"""
+        height, width = face_gray.shape
+        
+        # Divide face into regions
+        upper_face = face_gray[0:height//3, :]  # Forehead and eyes
+        middle_face = face_gray[height//3:2*height//3, :]  # Nose and cheeks
+        lower_face = face_gray[2*height//3:height, :]  # Mouth and chin
+        
+        # Calculate brightness in each region
+        upper_brightness = np.mean(upper_face)
+        middle_brightness = np.mean(middle_face)
+        lower_brightness = np.mean(lower_face)
+        
+        # Calculate contrast and texture
+        overall_contrast = np.std(face_gray)
+        
+        # Calculate additional metrics
+        brightness_variance = np.var([upper_brightness, middle_brightness, lower_brightness])
+        
+        return {
+            'upper_brightness': upper_brightness,
+            'middle_brightness': middle_brightness,
+            'lower_brightness': lower_brightness,
+            'overall_contrast': overall_contrast,
+            'brightness_ratio': lower_brightness / upper_brightness if upper_brightness > 0 else 1,
+            'brightness_variance': brightness_variance
+        }
