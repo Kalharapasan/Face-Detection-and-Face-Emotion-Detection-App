@@ -83,3 +83,54 @@ class EmotionDetector:
             'brightness_ratio': lower_brightness / upper_brightness if upper_brightness > 0 else 1,
             'brightness_variance': brightness_variance
         }
+    
+    def classify_emotion(self, features, geometry):
+        """Classify emotion based on features and geometry"""
+        
+        # Happy: Smile detected, normal eye opening
+        if features['smiles'] > 0:
+            confidence = min(0.95, 0.7 + features['smiles'] * 0.1)
+            return "Happy", confidence
+        
+        # Surprised: Wide eyes (more than 2 detected, high contrast)
+        if features['eyes'] > 2 and geometry['overall_contrast'] > 45:
+            return "Surprised", 0.80
+        
+        # Sad: Lower face darker, no smile, low contrast
+        if (geometry['brightness_ratio'] < 0.90 and 
+            features['smiles'] == 0 and 
+            geometry['lower_brightness'] < 100):
+            return "Sad", 0.75
+        
+        # Angry: Low overall brightness, no smile, high contrast
+        if (geometry['overall_contrast'] > 40 and 
+            features['smiles'] == 0 and 
+            geometry['upper_brightness'] < 90):
+            return "Angry", 0.70
+        
+        # Fear: High brightness variance, wide eyes
+        if (geometry['brightness_variance'] > 200 and 
+            features['eyes'] >= 2 and 
+            geometry['overall_contrast'] > 35):
+            return "Fear", 0.65
+        
+        # Disgust: Specific brightness pattern
+        if (geometry['middle_brightness'] < geometry['upper_brightness'] and 
+            geometry['middle_brightness'] < geometry['lower_brightness'] and
+            features['smiles'] == 0):
+            return "Disgust", 0.60
+        
+        # Neutral/Calm: Balanced features
+        if features['eyes'] >= 2 and features['smiles'] == 0:
+            if geometry['overall_contrast'] < 35:
+                return "Calm", 0.65
+            else:
+                return "Neutral", 0.60
+        
+        # Serious: Low brightness, no smile
+        if (geometry['upper_brightness'] < 95 and 
+            features['smiles'] == 0):
+            return "Serious", 0.55
+        
+        # Default
+        return "Unknown", 0.30
