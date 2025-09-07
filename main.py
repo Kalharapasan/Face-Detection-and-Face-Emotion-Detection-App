@@ -410,6 +410,15 @@ class EmotionDetectionApp:
         except Exception as e:
             messagebox.showerror("Error", f"Failed to start detection: {str(e)}")
     
+    def stop_detection(self):
+        """Stop live emotion detection"""
+        self.detection_running = False
+        if self.cap:
+            self.cap.release()
+        
+        self.start_btn.config(state='normal')
+        self.stop_btn.config(state='disabled')
+        self.video_label.config(image='', text="Camera Feed Stopped")
 
 def main():
     root = tk.Tk()
