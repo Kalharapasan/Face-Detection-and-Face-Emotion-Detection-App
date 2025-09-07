@@ -483,6 +483,18 @@ class EmotionDetectionApp:
         """Update video display"""
         self.video_label.config(image=photo)
         self.video_label.image = photo  # Keep a reference
+    
+    def update_session_time(self):
+        """Update session timer"""
+        if self.detection_running and hasattr(self, 'session_start_time'):
+            elapsed = datetime.now() - self.session_start_time
+            minutes, seconds = divmod(elapsed.seconds, 60)
+            time_str = f"Session Time: {minutes:02d}:{seconds:02d}"
+            self.session_time_var.set(time_str)
+            
+            # Schedule next update
+            self.root.after(1000, self.update_session_time)
+    
 
 def main():
     root = tk.Tk()
