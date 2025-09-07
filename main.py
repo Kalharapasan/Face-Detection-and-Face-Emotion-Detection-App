@@ -495,6 +495,27 @@ class EmotionDetectionApp:
             # Schedule next update
             self.root.after(1000, self.update_session_time)
     
+    def save_current_result(self):
+        """Save current detection results"""
+        if not self.emotion_history:
+            messagebox.showwarning("Warning", "No detection results to save")
+            return
+        
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"emotion_results_{timestamp}.json"
+        
+        try:
+            os.makedirs("results", exist_ok=True)
+            filepath = os.path.join("results", filename)
+            
+            with open(filepath, 'w') as f:
+                json.dump(self.emotion_history, f, indent=2)
+            
+            messagebox.showinfo("Success", f"Results saved to {filepath}")
+            self.load_saved_results()
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to save results: {str(e)}")
 
 def main():
     root = tk.Tk()
