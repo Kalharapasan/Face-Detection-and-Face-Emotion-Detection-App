@@ -1,10 +1,8 @@
 # 🎭 Emotion Detection System
 <img width="1366" height="768" alt="Screenshot (166)" src="https://github.com/user-attachments/assets/d52f9451-8427-4ecd-9cf4-322440585713" />
-<img width="1366" height="768" alt="Screenshot (165)" src="https://github.com/user-attachments/assets/01f67655-3fe3-470a-9194-31cd748c371f" />
 <img width="1366" height="768" alt="Screenshot (167)" src="https://github.com/user-attachments/assets/6656d19f-940a-4d08-8436-26b922421e5f" />
 <img width="1366" height="768" alt="Screenshot (168)" src="https://github.com/user-attachments/assets/3e31e797-94e4-481d-aa3d-2da6546b552a" />
-<img width="1366" height="768" alt="Screenshot (170)" src="https://github.com/user-attachments/assets/9d42cdda-6df0-4bbc-be80-0db30b8ea1ad" />
-<img width="1366" height="768" alt="Screenshot (164)" src="https://github.com/user-attachments/assets/2d562da8-dab6-440a-a1a8-20da366bc9ae" />
+
 
 
 A comprehensive emotion detection application with GUI interface, training data collection, and detailed analytics reporting.
