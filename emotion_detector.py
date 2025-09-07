@@ -148,3 +148,75 @@ class EmotionDetector:
         avg_confidence = np.mean([e[1] for e in self.emotion_history if e[0] == most_common])
         
         return most_common, avg_confidence
+
+    def process_frame(self, frame):
+        """Process a single frame and return detection results"""
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        
+        # Detect faces
+        faces = self.face_cascade.detectMultiScale(
+            gray, 
+            scaleFactor=1.1, 
+            minNeighbors=5, 
+            minSize=(60, 60)
+        )
+        
+        results = []
+        
+        for (x, y, w, h) in faces:
+            # Draw face rectangle
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            
+            # Extract face region
+            face_gray = gray[y:y + h, x:x + w]
+            
+            if face_gray.size > 0:
+                # Detect features
+                features = self.detect_facial_features(face_gray)
+                geometry = self.analyze_face_geometry(face_gray)
+                
+                # Classify emotion
+                emotion, confidence = self.classify_emotion(features, geometry)
+                
+                # Smooth emotion over time
+                smooth_emotion, smooth_confidence = self.smooth_emotion(emotion, confidence)
+                
+                # Get color for emotion
+                color = self.emotion_colors.get(smooth_emotion, (128, 128, 128))
+                
+                # Draw emotion label
+                label = f"{smooth_emotion}: {smooth_confidence:.2f}"
+                (text_width, text_height), baseline = cv2.getTextSize(
+                    label, cv2.FONT_HERSHEY_SIMPLEX, 0.8, 2
+                )
+                
+                cv2.rectangle(
+                    frame, 
+                    (x, y - text_height - 10), 
+                    (x + text_width, y), 
+                    color, 
+                    -1
+                )
+                
+                cv2.putText(
+                    frame, 
+                    label, 
+                    (x, y - 5), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 
+                    0.8, 
+                    (0, 0, 0), 
+                    2
+                )
+                
+                # Draw detected features
+                self._draw_features(frame, features, x, y)
+                
+                # Add to results
+                results.append({
+                    'emotion': smooth_emotion,
+                    'confidence': smooth_confidence,
+                    'bbox': (x, y, w, h),
+                    'features': features
+                })
+        
+        return results
