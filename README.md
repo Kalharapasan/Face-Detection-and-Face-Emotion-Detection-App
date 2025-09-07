@@ -1,4 +1,5 @@
 # 🎭 Emotion Detection System
+<img width="1366" height="768" alt="Screenshot (164)" src="https://github.com/user-attachments/assets/d140f13a-ad50-4798-a1c0-c3aabfae694b" />
 
 A comprehensive emotion detection application with GUI interface, training data collection, and detailed analytics reporting.
 
