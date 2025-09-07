@@ -610,6 +610,16 @@ class EmotionDetectionApp:
         
         self.results_text.insert(1.0, results_info)
     
+    def generate_report(self):
+        """Generate detailed analytics report"""
+        try:
+            from report_generator import ReportGenerator
+            generator = ReportGenerator()
+            generator.generate_comprehensive_report()
+            messagebox.showinfo("Success", "Report generated successfully! Check the reports folder.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to generate report: {str(e)}")
+    
     
 
 def main():
