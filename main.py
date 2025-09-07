@@ -542,6 +542,36 @@ class EmotionDetectionApp:
         os.startfile(training_dir)  # Windows
         # For other OS: subprocess.call(["open", training_dir])  # macOS
         # For other OS: subprocess.call(["xdg-open", training_dir])  # Linux
+    
+    def update_training_overview(self):
+        """Update training data overview"""
+        self.training_text.delete(1.0, tk.END)
+        
+        training_info = "📊 Training Data Overview\n"
+        training_info += "=" * 50 + "\n\n"
+        
+        training_dir = "training_data"
+        if os.path.exists(training_dir):
+            emotions = ['Happy', 'Sad', 'Angry', 'Surprised', 'Fear', 'Disgust', 'Neutral']
+            for emotion in emotions:
+                emotion_dir = os.path.join(training_dir, emotion.lower())
+                if os.path.exists(emotion_dir):
+                    count = len([f for f in os.listdir(emotion_dir) if f.endswith('.jpg')])
+                    training_info += f"{emotion}: {count} images\n"
+                else:
+                    training_info += f"{emotion}: 0 images\n"
+        else:
+            training_info += "No training data found. Start collecting data first.\n"
+        
+        training_info += "\n" + "=" * 50 + "\n"
+        training_info += "💡 Tips:\n"
+        training_info += "- Collect at least 100 images per emotion\n"
+        training_info += "- Vary lighting conditions\n"
+        training_info += "- Include different face angles\n"
+        training_info += "- Ensure clear facial expressions\n"
+        
+        self.training_text.insert(1.0, training_info)
+    
 
 def main():
     root = tk.Tk()
