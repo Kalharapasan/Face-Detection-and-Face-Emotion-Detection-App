@@ -275,7 +275,51 @@ class EmotionDetectionApp:
         
         self.update_training_overview()
     
-
+    def setup_results_tab(self):
+        """Setup results and analytics tab"""
+        results_frame = ttk.Frame(self.notebook)
+        self.notebook.add(results_frame, text="📊 Results & Analytics")
+        
+        # Results controls
+        controls_frame = tk.Frame(results_frame, bg='#34495e')
+        controls_frame.pack(fill='x', padx=10, pady=5)
+        
+        tk.Button(
+            controls_frame,
+            text="🔄 Refresh Results",
+            command=self.load_saved_results,
+            bg='#3498db',
+            fg='white',
+            font=('Arial', 10, 'bold')
+        ).pack(side='left', padx=10)
+        
+        tk.Button(
+            controls_frame,
+            text="📈 Generate Report",
+            command=self.generate_report,
+            bg='#9b59b6',
+            fg='white',
+            font=('Arial', 10, 'bold')
+        ).pack(side='left', padx=10)
+        
+        tk.Button(
+            controls_frame,
+            text="🗑️ Clear All Results",
+            command=self.clear_results,
+            bg='#e74c3c',
+            fg='white',
+            font=('Arial', 10, 'bold')
+        ).pack(side='left', padx=10)
+        
+        # Results display
+        self.results_text = tk.Text(
+            results_frame,
+            bg='#2c3e50',
+            fg='#ecf0f1',
+            font=('Consolas', 10)
+        )
+        self.results_text.pack(fill='both', expand=True, padx=10, pady=10)
+    
 
 def main():
     root = tk.Tk()
