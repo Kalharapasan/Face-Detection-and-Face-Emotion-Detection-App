@@ -188,6 +188,93 @@ class EmotionDetectionApp:
         )
         self.recent_listbox.pack(fill='both', expand=True)
     
+    def setup_training_tab(self):
+        """Setup training/data collection tab"""
+        training_frame = ttk.Frame(self.notebook)
+        self.notebook.add(training_frame, text="🎓 Train Data")
+        
+        # Training instructions
+        instruction_text = """
+        📚 Training Data Collection
+        
+        This tab allows you to collect and manage training data for emotion detection.
+        
+        Steps:
+        1. Select emotion category
+        2. Start data collection
+        3. Capture facial expressions
+        4. Review and manage collected data
+        """
+        
+        instruction_label = tk.Label(
+            training_frame,
+            text=instruction_text,
+            font=('Arial', 12),
+            justify='left',
+            bg='#ecf0f1',
+            fg='#2c3e50'
+        )
+        instruction_label.pack(fill='x', padx=20, pady=10)
+        
+        # Training controls
+        controls_frame = tk.Frame(training_frame, bg='#34495e')
+        controls_frame.pack(fill='x', padx=20, pady=10)
+        
+        # Emotion selection
+        tk.Label(
+            controls_frame, 
+            text="Select Emotion:", 
+            font=('Arial', 12, 'bold'),
+            bg='#34495e', 
+            fg='white'
+        ).pack(side='left', padx=10)
+        
+        self.emotion_combo = ttk.Combobox(
+            controls_frame,
+            values=['Happy', 'Sad', 'Angry', 'Surprised', 'Fear', 'Disgust', 'Neutral'],
+            state='readonly'
+        )
+        self.emotion_combo.pack(side='left', padx=10)
+        self.emotion_combo.set('Happy')
+        
+        # Training buttons
+        tk.Button(
+            controls_frame,
+            text="🎯 Start Data Collection",
+            command=self.start_data_collection,
+            bg='#27ae60',
+            fg='white',
+            font=('Arial', 10, 'bold')
+        ).pack(side='left', padx=10)
+        
+        tk.Button(
+            controls_frame,
+            text="📁 Open Training Data Folder",
+            command=self.open_training_folder,
+            bg='#3498db',
+            fg='white',
+            font=('Arial', 10, 'bold')
+        ).pack(side='left', padx=10)
+        
+        # Training data preview
+        preview_frame = tk.LabelFrame(
+            training_frame,
+            text="📂 Training Data Overview",
+            font=('Arial', 12, 'bold')
+        )
+        preview_frame.pack(fill='both', expand=True, padx=20, pady=10)
+        
+        self.training_text = tk.Text(
+            preview_frame,
+            height=15,
+            bg='#2c3e50',
+            fg='#ecf0f1',
+            font=('Consolas', 10)
+        )
+        self.training_text.pack(fill='both', expand=True, padx=10, pady=10)
+        
+        self.update_training_overview()
+    
 
 
 def main():
