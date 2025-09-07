@@ -220,3 +220,19 @@ class EmotionDetector:
                 })
         
         return results
+
+    def _draw_features(self, frame, features, offset_x, offset_y):
+        """Draw detected features on the frame"""
+        # Draw eyes
+        for (ex, ey, ew, eh) in features['eye_positions']:
+            cv2.rectangle(frame, 
+                         (offset_x + ex, offset_y + ey), 
+                         (offset_x + ex + ew, offset_y + ey + eh), 
+                         (255, 0, 0), 1)
+        
+        # Draw smiles
+        for (sx, sy, sw, sh) in features['smile_positions']:
+            cv2.rectangle(frame, 
+                         (offset_x + sx, offset_y + sy), 
+                         (offset_x + sx + sw, offset_y + sy + sh), 
+                         (0, 0, 255), 1)
