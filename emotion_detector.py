@@ -134,3 +134,17 @@ class EmotionDetector:
         
         # Default
         return "Unknown", 0.30
+    
+    def smooth_emotion(self, emotion, confidence):
+        """Smooth emotion detection over time"""
+        self.emotion_history.append((emotion, confidence))
+        
+        if len(self.emotion_history) > self.history_size:
+            self.emotion_history.pop(0)
+        
+        # Get most frequent emotion
+        emotions = [e[0] for e in self.emotion_history]
+        most_common = max(set(emotions), key=emotions.count)
+        avg_confidence = np.mean([e[1] for e in self.emotion_history if e[0] == most_common])
+        
+        return most_common, avg_confidence
