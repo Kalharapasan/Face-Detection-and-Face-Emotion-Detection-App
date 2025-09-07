@@ -1,4 +1,3 @@
-#main.py
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import cv2
@@ -619,7 +618,6 @@ class EmotionDetectionApp:
             messagebox.showinfo("Success", "Report generated successfully! Check the reports folder.")
         except Exception as e:
             messagebox.showerror("Error", f"Failed to generate report: {str(e)}")
-    
     
     def clear_results(self):
         """Clear all results"""
