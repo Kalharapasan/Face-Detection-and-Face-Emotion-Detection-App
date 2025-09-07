@@ -516,6 +516,23 @@ class EmotionDetectionApp:
             
         except Exception as e:
             messagebox.showerror("Error", f"Failed to save results: {str(e)}")
+    
+    def start_data_collection(self):
+        """Start data collection for training"""
+        selected_emotion = self.emotion_combo.get()
+        if not selected_emotion:
+            messagebox.showwarning("Warning", "Please select an emotion first")
+            return
+        
+        # Import and run data collection
+        try:
+            from data_collector import DataCollector
+            collector = DataCollector(selected_emotion)
+            collector.start_collection()
+            self.update_training_overview()
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to start data collection: {str(e)}")
+    
 
 def main():
     root = tk.Tk()
