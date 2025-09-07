@@ -419,6 +419,53 @@ class EmotionDetectionApp:
         self.start_btn.config(state='normal')
         self.stop_btn.config(state='disabled')
         self.video_label.config(image='', text="Camera Feed Stopped")
+    
+    def detection_loop(self):
+        """Main detection loop"""
+        face_count = 0
+        
+        while self.detection_running:
+            ret, frame = self.cap.read()
+            if not ret:
+                break
+            
+            # Flip frame for mirror effect
+            frame = cv2.flip(frame, 1)
+            
+            # Process frame
+            results = self.detector.process_frame(frame)
+            
+            if results:
+                for result in results:
+                    emotion = result['emotion']
+                    confidence = result['confidence']
+                    
+                    # Update UI
+                    self.root.after(0, self.update_detection_ui, emotion, confidence)
+                    
+                    # Save to history
+                    timestamp = datetime.now().strftime("%H:%M:%S")
+                    self.emotion_history.append({
+                        'timestamp': timestamp,
+                        'emotion': emotion,
+                        'confidence': confidence
+                    })
+                    
+                    face_count += 1
+            
+            # Convert frame for display
+            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            img = Image.fromarray(rgb_frame)
+            img = img.resize((640, 480), Image.Resampling.LANCZOS)
+            photo = ImageTk.PhotoImage(img)
+            
+            # Update video display
+            self.root.after(0, self.update_video_display, photo)
+            
+            # Update face count
+            self.root.after(0, lambda: self.faces_detected_var.set(f"Faces Detected: {face_count}"))
+    
+    
 
 def main():
     root = tk.Tk()
