@@ -621,6 +621,22 @@ class EmotionDetectionApp:
             messagebox.showerror("Error", f"Failed to generate report: {str(e)}")
     
     
+    def clear_results(self):
+        """Clear all results"""
+        if messagebox.askyesno("Confirm", "Are you sure you want to clear all results?"):
+            try:
+                results_dir = "results"
+                if os.path.exists(results_dir):
+                    for file in os.listdir(results_dir):
+                        os.remove(os.path.join(results_dir, file))
+                
+                self.emotion_history.clear()
+                self.recent_listbox.delete(0, tk.END)
+                self.load_saved_results()
+                messagebox.showinfo("Success", "All results cleared!")
+                
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to clear results: {str(e)}")
 
 def main():
     root = tk.Tk()
