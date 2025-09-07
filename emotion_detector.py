@@ -240,3 +240,30 @@ class EmotionDetector:
     def reset_history(self):
         """Reset emotion history"""
         self.emotion_history.clear()
+
+if __name__ == "__main__":
+    # Simple test
+    detector = EmotionDetector()
+    
+    cap = cv2.VideoCapture(0)
+    print("Press 'q' to quit, 'r' to reset emotion history")
+    
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+        
+        frame = cv2.flip(frame, 1)
+        results = detector.process_frame(frame)
+        
+        cv2.imshow('Emotion Detection Test', frame)
+        
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord('q'):
+            break
+        elif key == ord('r'):
+            detector.reset_history()
+            print("Emotion history reset")
+    
+    cap.release()
+    cv2.destroyAllWindows()
